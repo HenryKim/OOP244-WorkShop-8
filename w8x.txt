@@ -1,0 +1,280 @@
+Script started on Fri 02 Aug 2013 07:19:24 PM EDT
+hkim142@matrix:~/oop244/w8> whoami
+hkim142
+hkim142@matrix:~/oop244/w8> w[Kcat Intl[K[K[K[KPhoneNu,[Kmber.h PhoneNumber.cpp IntlPhoneNumber.h  Intl [KPhoneNumber.cpp IntlPhoneNumberWS.h IntlPhoneNumberWS.cpp
+/*Hyungi Kim 
+025 741 125
+OOP244
+PhoneNumber.h*/
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+class PhoneNumber{
+	int areacode;
+	char *number;
+public:
+	PhoneNumber();
+	PhoneNumber(int ac, const char *num);
+	void display() const;
+	bool valid() const;
+	void read(istream&);
+
+};
+istream& operator >>(istream&, PhoneNumber&);
+/*Hyungi Kim 
+025 741 125
+OOP244
+PhoneNumber.cpp*/
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+#include"PhoneNumber.h"
+PhoneNumber::PhoneNumber(){
+	areacode=0;
+	number=NULL;
+}
+
+PhoneNumber::PhoneNumber(int ac, const char *num){
+	if( ac >0 && num !=NULL ){
+		delete [] number;
+		if(atoi(num)!=0){
+		number = new char [ strlen(num)+1];
+		areacode=ac;
+		strcpy (number,num);
+		}
+	}
+	else{
+		*this=PhoneNumber();
+	}
+}
+
+void PhoneNumber::display() const{
+	if (areacode >0 && (number !='\0' || atoi(number) >0)){
+		cout<<areacode<<"-";
+		for(int i =0;i<8;i++){
+			if(0<number[i]<8){
+				if(i == 3){
+				cout<<"-"<<number[i];
+			}
+				else if(number[i] == '\0'){
+					i=10;
+				}
+				else{
+			cout<<number[i];
+				}
+			}
+			
+		}
+	}
+}
+
+bool PhoneNumber::valid() const{
+	PhoneNumber temp;
+	if(areacode >0 && (number !='\0' || atoi(number)>0) ){//check its right digit
+			return true;
+	}
+	
+return false;
+}
+
+void PhoneNumber::read(istream& is){
+	number = new char [8];
+	cout<<"Area code : ";
+	is>>areacode;
+	if(areacode >0){
+	cout<<"Phone Number : " ;
+	is.ignore(10,'\n');
+	is.getline(number,8);
+	}
+	else{
+		PhoneNumber();
+	}
+
+}
+
+istream& operator >>(istream& is, PhoneNumber& a){
+	a.read(is);
+	return is;
+}
+/*Hyungi Kim 
+025 741 125
+OOP244
+IntlPhoneNumber.h*/
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+#include "PhoneNumber.h"
+class IntlPhoneNumber: public PhoneNumber{
+	int Intlcode;
+public:
+	IntlPhoneNumber();
+	IntlPhoneNumber(int intl, int ac, char *num);
+	void display() const;
+	bool valid() const;
+	void read(istream&);
+};
+istream& operator >>(istream&, IntlPhoneNumber&);
+/*Hyungi Kim 
+025 741 125
+OOP244
+IntlPhoneNumber.cpp*/
+#include "IntlPhoneNumber.h"
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+IntlPhoneNumber::IntlPhoneNumber():PhoneNumber(){
+	Intlcode=0;
+}
+
+IntlPhoneNumber::IntlPhoneNumber(int intl,int ac, char* num):PhoneNumber(ac,num){
+	if( intl <0 && ac <0 && (num !=NULL || atoi(num)>0)){
+		Intlcode=intl;
+	}
+	else{
+		*this=IntlPhoneNumber();
+	}
+}
+
+void IntlPhoneNumber::display() const{
+	if( Intlcode>0){
+		cout<<setw(2);
+		cout<<Intlcode<<"-";
+		PhoneNumber::display();
+	}
+}
+
+bool IntlPhoneNumber::valid() const{
+	bool flag;
+	if(Intlcode >0 ){//check its right digit
+		bool flag = PhoneNumber::valid();
+		if(flag == true){
+			return true;
+		}
+	}
+	
+return false;
+}
+
+void IntlPhoneNumber::read(istream& is){
+	cout<<"International Code : ";
+	is>>Intlcode;
+	if(Intlcode>0){
+	PhoneNumber::read(is);
+	}
+}
+
+istream& operator >>(istream& is, IntlPhoneNumber& a){
+	a.read(is);
+	return is;
+}
+/*Hyungi Kim 
+025 741 125
+OOP244
+IntlPhoneNumber.h*/
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+#include"IntlPhoneNumber.h"
+class IntlPhoneNumberWS:public IntlPhoneNumber{
+	char *name;
+public:
+	IntlPhoneNumberWS();
+	IntlPhoneNumberWS(int intl, int ac, char *num, char *nam);
+	void display() const;
+	bool valid() const;
+	void read(istream&);
+};
+istream& operator >>(istream&, IntlPhoneNumberWS&);/*Hyungi Kim 
+025 741 125
+OOP244
+IntlPhoneNumberWS.cpp*/
+#include"IntlPhoneNumberWS.h"
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <iomanip>
+using namespace std;
+
+
+IntlPhoneNumberWS::IntlPhoneNumberWS():IntlPhoneNumber(){
+	name=NULL;
+}
+
+IntlPhoneNumberWS::IntlPhoneNumberWS(int intl,int ac, char* num, char* nam):IntlPhoneNumber(intl,ac,num){
+	if( intl >0 && ac >0 && (num !=NULL || atoi(num)>0) && nam != NULL){
+		if(name != NULL){
+			delete [] name;
+		}
+		name = new char [ strlen(nam) +1 ];
+	}
+	else{
+		*this=IntlPhoneNumberWS();
+	}
+}
+
+void IntlPhoneNumberWS::display() const{
+	if(name!=NULL){
+		IntlPhoneNumber::display();
+		cout <<"  ";
+		cout<<name;
+	}
+}
+
+bool IntlPhoneNumberWS::valid() const{
+	bool flag;
+	if(name != NULL ){
+		bool flag = IntlPhoneNumber::valid();
+		if(flag == true){
+			return true;
+		}
+	}
+	
+return false;
+}
+
+void IntlPhoneNumberWS::read(istream& is){
+	name = new char [40];
+	IntlPhoneNumber::read(is);
+	if( IntlPhoneNumber::valid() == true){
+	cout<<"Subscriber :";
+	cin.getline(name,40);
+	}
+}
+
+istream& operator >>(istream& is, IntlPhoneNumberWS& a){
+	a.read(is);
+	return is;
+}hkim142@matrix:~/oop244/w8> a.out[K[K[K[K[Ka.out
+Telephone List
+==============
+International Code : 1
+Area code : 416
+Phone Number : 5551212
+Subscriber :Zorro
+International Code : 44
+Area code : 141
+Phone Number : 4441111
+Subscriber :The K^HL      Lone Ranger
+International Code : 49
+Area code : 228
+Phone Number : 6661234
+Subscriber :Homer Simpson
+International Code : 0
+
+ 1-416-555-1212Zorro
+44-141-444-1111The Lone Ranger
+49-228-666-1234Homer Simpson
+hkim142@matrix:~/oop244/w8> exit
+exit
+
+Script done on Fri 02 Aug 2013 07:21:03 PM EDT
